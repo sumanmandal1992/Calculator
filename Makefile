@@ -9,4 +9,4 @@ stack.o : Stack.h
 
 .PHONY : clean
 clean :
-	rm $(objects) calculate
+	rm $(objects)
