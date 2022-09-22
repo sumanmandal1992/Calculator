@@ -1,0 +1,19 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-std=c2x",
+      "-Wall",
+      "-fmax-errors=10",
+      "-Wextra",
+      "-Iinclude",
+      "-o",
+      "obj/calculation.o",
+      "src/calculation.c"
+    ],
+    "directory": "/home/suman/Documents/C_Programs/Calculator",
+    "file": "/home/suman/Documents/C_Programs/Calculator/src/calculation.c",
+    "output": "/home/suman/Documents/C_Programs/Calculator/obj/calculation.o"
+  }
+]
