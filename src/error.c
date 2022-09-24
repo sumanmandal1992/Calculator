@@ -2,7 +2,7 @@
 
 int isvalidexp(char *a)
 {
-	int bracket=0, i=0;
+	int bracket = 0, i = 0;
 
 	if(a[0]=='*' || a[0]=='/' || a[0]=='^')
 		return 0;
@@ -17,6 +17,9 @@ int isvalidexp(char *a)
 
 			case ')':
 				--bracket;
+				break;
+
+			case '.':
 				break;
 
 			case '+':

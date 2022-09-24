@@ -9,7 +9,7 @@ int isOperand(char ch)
 	return ((ch>='0' && ch<='9') || ch=='.');
 }
 
-// Define precedence of operator.
+// Define precedence of operators.
 int prec(char ch)
 {
 	switch(ch){
@@ -30,26 +30,26 @@ int prec(char ch)
 // Convert string to double.
 double strtoD(char *a)
 {
-	double s=0,d=1;
-	int i=0,j=0;
-	while(a[j]!='\0'){
-		if(a[j]=='.') {
-			while(a[i]!='.'){
-				s=s*10+(a[i]-'0');
+	double s = 0, d = 1;
+	int i = 0, j = 0;
+	while(a[j] != '\0') {
+		if(a[j] == '.') {
+			while(a[i] != '.') {
+				s = s * 10 + (a[i] - '0');
 				i++;
 			}
 			i++;
-			while(a[i]!='\0'){
-				d*=10.0;
-				s=s+(a[i]-'0')/d;
+			while(a[i] != '\0') {
+				d *= 10.0;
+				s = s + (a[i] - '0') / d;
 				i++;
 			}
 		}
 		j++;
 	}
 
-	while(a[i]!='\0'){
-		s=s*10+(a[i]-'0');
+	while(a[i] != '\0'){
+		s = s * 10 + (a[i] - '0');
 		i++;
 	}
 	return s;
