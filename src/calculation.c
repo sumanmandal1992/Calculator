@@ -115,7 +115,7 @@ long double calculate(char *exp)
 	char temp[len(exp)];
 	long double operand[len(exp)];
 
-	//Create a stack of capacity equal to expression size.
+	// Create a stack of capacity equal to expression size.
 	Stack *stack = createStack(len(exp)/2);
 	if(stack==NULL){
 		printf("Stack creation failed\n");
@@ -162,7 +162,7 @@ long double calculate(char *exp)
 		i++;
 	}
 
-	//pop all the operators from the stack.
+	// pop all the operators from the stack.
 	while(!isEmpty(stack)){
 		operation(operand, k, pop(stack));
 		k--;
