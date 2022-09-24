@@ -6,6 +6,7 @@ PKGCONFIG ?=
 LFLAGS := 
 LIBS := 
 
+# Defining directory
 IDIR := include
 SRCDIR := src
 ODIR := obj

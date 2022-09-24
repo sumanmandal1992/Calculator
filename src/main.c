@@ -2,9 +2,10 @@
 #include "calculation.h"
 #define MAX 100
 
-//Function prototype.///
+// Function prototype.
 void eatspace(char*);
-//The main function.//////////////////////////////////////////////////
+
+// The main function.
 int main()
 {
 	char a[MAX];

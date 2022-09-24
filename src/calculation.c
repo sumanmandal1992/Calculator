@@ -69,28 +69,28 @@ void operation(long double *array, int position, char operator)
 {
 	switch(operator){
 		case '+':
-			array[(position-1)]=array[(position-1)] + array[position];
-			array[position]=0;
+			array[(position-1)] = array[(position-1)] + array[position];
+			array[position] = 0;
 			break;
 
 		case '-':
-			array[(position-1)]=array[(position-1)] - array[position];
-			array[position]=0;
+			array[(position-1)] = array[(position-1)] - array[position];
+			array[position] = 0;
 			break;
 
 		case '*':
-			array[(position-1)]=array[(position-1)] * array[position];
-			array[position]=0;
+			array[(position-1)] = array[(position-1)] * array[position];
+			array[position] = 0;
 			break;
 
 		case '/':
-			array[(position-1)]=array[(position-1)] / array[position];
+			array[(position-1)] = array[(position-1)] / array[position];
 			array[position]=0;
 			break;
 
 		case '^':
-			array[(position-1)]=pow(array[(position-1)], array[position]);
-			array[position]=0;
+			array[(position-1)] = pow(array[(position-1)], array[position]);
+			array[position] = 0;
 			break;
 
 		default:
@@ -122,26 +122,26 @@ long double calculate(char *exp)
 		exit(1);
 	}
 
-	//Travers expression and calculate.
+	// Travers expression and calculate.
 	while(exp[i]!='\0'){
 
-		//Check if the expression is valid.
+		// Check if the expression is valid.
 		if(!isvalidexp(exp)){
 			printf("Systax error or use parenthesis for unary operators. Eg. (-a)\n");
 		}
 
-		//If the scanned character is an operand, add it to operand array.
+		// If the scanned character is an operand, add it to operand array.
 		if(isOperand(exp[i])){
 			temp[j++]=exp[i];
 			temp[j]='\0';
 			operand[k]=strtoD(temp);
 		}
 
-		//If the scanned character is an '(', push it to stack.
+		// If the scanned character is an '(', push it to stack.
 		else if(exp[i]=='('){
 			push(stack, exp[i]);
 		}
-		//If the scanned character is an ')', pop and calculate operation until an '(' is encountered.
+		// If the scanned character is an ')', pop and calculate operation until an '(' is encountered.
 		else if(exp[i]==')'){
 			while(!isEmpty(stack) && peek(stack) != '('){
 				operation(operand, k, pop(stack));
@@ -167,7 +167,8 @@ long double calculate(char *exp)
 		operation(operand, k, pop(stack));
 		k--;
 	}
-	//Delete alocated stack memory when stack is emptied.
+	// Delete alocated stack memory when stack is emptied.
+	free(stack->array);
 	free(stack);
 
 	// Print output.
