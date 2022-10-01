@@ -133,13 +133,56 @@ long double calculation(char *exp)
 		}
 
 		/*
-		 * Collecting operators.
+		 * Collecting operators and calculate according to precedence.
 		 */
 		if(isOperator(exp[pos])) {
 			/*
-			 * Push parenthesis into stack.
+			 * Push '(' parenthesis encountered.
 			 */
 			if(exp[pos] == '(') {
+				/*
+				 * If there is no operator before parenthesis, take it as product.
+				 */
+				if(isDigit(exp[pos-1])) {
+					if(topo == NULL) {
+						info->operator = '*';
+						push(&topo, info, true);
+
+					} else if(precedence('*') >= precedence(topo->info->operator)) {
+						info->operator = '*';
+						push(&topo, info, true);
+
+					} else if (precedence('*') < precedence(topo->info->operator)) {
+						trackop = topo;
+						while(trackop != NULL) {
+							if(precedence(exp[pos]) >= precedence(trackop->info->operator) || exp[pos] == ')')
+								break;
+							trackop = trackop->next;
+
+							num1 = topd->info->number;
+							if(topd->next != NULL)
+								num2 = topd->next->info->number;
+							else
+								num2 = 0.0;
+							operator = topo->info->operator;
+							result = calculate(num1, num2, operator);
+							info->number = result;
+
+							pop(&topd);
+							pop(&topd);
+							pop(&topo);
+
+							/*
+							 * Pushing number into stack;
+							 */
+							push(&topd, info, false);
+						}
+						info->operator = '*';
+						push(&topo, info, true);
+					}
+				}
+
+
 				info->operator = exp[pos];
 				push(&topo, info, true);
 				
@@ -156,7 +199,7 @@ long double calculation(char *exp)
 			}
 
 			/*
-			 * Push operators and numbers and calculate.
+			 * When operator stack is empty.
 			 */
 			if(topo == NULL) {
 				if(exp[pos] == '-') {
@@ -168,6 +211,9 @@ long double calculation(char *exp)
 					push(&topo, info, true);
 				}
 
+				/*
+				 * When ')' parenthesis encountered.
+				 */
 			} else if(exp[pos] == ')') {
 				trackop = topo;
 				while(trackop->info->operator != '(') {
@@ -190,6 +236,53 @@ long double calculation(char *exp)
 				if(topo != NULL)
 					pop(&topo);
 
+
+				/*
+				 * If there is no operator after ')' and number or '(' exists, consider as product.
+				 */
+				if(isDigit(exp[pos+1]) || exp[pos+1] == '(') {
+					if(topo == NULL) {
+						info->operator = '*';
+						push(&topo, info, true);
+
+					} else if(precedence('*') >= precedence(topo->info->operator)) {
+						info->operator = '*';
+						push(&topo, info, true);
+
+					} else if (precedence('*') < precedence(topo->info->operator)) {
+						trackop = topo;
+						while(trackop != NULL) {
+							if(precedence(exp[pos]) >= precedence(trackop->info->operator) || exp[pos] == ')')
+								break;
+							trackop = trackop->next;
+
+							num1 = topd->info->number;
+							if(topd->next != NULL)
+								num2 = topd->next->info->number;
+							else
+								num2 = 0.0;
+							operator = topo->info->operator;
+							result = calculate(num1, num2, operator);
+							info->number = result;
+
+							pop(&topd);
+							pop(&topd);
+							pop(&topo);
+
+							/*
+							 * Pushing number into stack;
+							 */
+							push(&topd, info, false);
+						}
+						info->operator = '*';
+						push(&topo, info, true);
+					}
+				}
+
+
+				/*
+				 * When expression's operator precedence is greater.
+				 */
 			} else if(precedence(exp[pos]) >= precedence(topo->info->operator)) {
 				if(exp[pos] == '-') {
 					unary = exp[pos];
@@ -200,6 +293,9 @@ long double calculation(char *exp)
 					push(&topo, info, true);
 				}
 
+				/*
+				 * When expression's operator precedence is less.
+				 */
 			} else if(precedence(exp[pos]) < precedence(topo->info->operator)) {
 				trackop = topo;
 				while(trackop != NULL) {

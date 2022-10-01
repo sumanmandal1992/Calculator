@@ -35,13 +35,15 @@ bool isValidExp(char *exp)
 				return false;
 		}
 
-		if(isDigit(exp[pos]) && isOperator(exp[pos+1]) && isOperator(exp[pos+2]) && exp[pos+1] != '(') {
-			if(exp[pos+2] == '*' || exp[pos+2] == '/' || exp[pos+2] == '^' || (isOperator(exp[pos+3]) && exp[pos+3] != '('))
-					return false;
+		if((isDigit(exp[pos]) || exp[pos] == '(') && isOperator(exp[pos+1]) && isOperator(exp[pos+2])) {
+			if((exp[pos+1] == '*' || exp[pos+1] == '/' || exp[pos+1] == '^') && (exp[pos+2] == '*' || exp[pos+2] == '/' || exp[pos+2] == '^'))
+				return false;
+			else if((exp[pos+1] == '+' || exp[pos+1] == '-') && (exp[pos+2] == '*' || exp[pos+2] == '/' || exp[pos+2] == '^'))
+				return false;
 		}
 
-		if(isDigit(exp[pos]) && isOperator(exp[pos-1]) && !isDigit(exp[pos-2]) && exp[pos-2] != ')') {
-			if(exp[pos-1] == '*' || exp[pos-1] == '/' || exp[pos-1] == '^')
+		if(isOperator(exp[pos]) && isOperator(exp[pos+1]) && isOperator(exp[pos+2])) {
+			if((exp[pos] != '(' || exp[pos] != ')') && (exp[pos+1] != '(' || exp[pos+1] != ')') && (exp[pos+2] != '(' || exp[pos+2] != ')'))
 				return false;
 		}
 

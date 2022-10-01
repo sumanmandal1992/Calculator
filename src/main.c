@@ -11,8 +11,8 @@ int main()
 	eatSpace(exp);
 	result = calculation(exp);
 	if((int)result == result)
-		printf("Result: %.0Lf\n\n", result);
+		printf("Result is: %.0Lf\n\n", result);
 	else
-		printf("Result: %Lf\n\n", result);
+		printf("Result is: %Lf\n\n", result);
 	return 0;
 }

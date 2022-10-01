@@ -13,7 +13,7 @@ Stack *newStack(void)
 	return NULL;
 }
 
-static Stack *create()
+static Stack *create(void)
 {
 	Stack *temp = (Stack *)malloc(sizeof(Stack));
 	if(temp == NULL) {
