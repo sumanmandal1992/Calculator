@@ -155,6 +155,9 @@ long double calculation(char *exp)
 				continue;
 			}
 
+			/*
+			 * Push operators and numbers and calculate.
+			 */
 			if(topo == NULL) {
 				if(exp[pos] == '-') {
 					unary = exp[pos];
