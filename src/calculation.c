@@ -264,6 +264,10 @@ long double calculation(char *exp)
 				pop(&topo);
 				push(&topd, info, false);
 			}
+			/*
+			 * Delete last number from stack and free it.
+			 */
+			pop(&topd);
 		}
 	}
 
