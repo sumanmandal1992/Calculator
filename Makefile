@@ -1,10 +1,10 @@
 DEBUG := g
 CC := gcc
 
-CFLAGS = -std=c2x -Wall -fmax-errors=10 -Wextra -I$(IDIR) -lm
+CFLAGS = -std=c2x -Wall -fmax-errors=10 -Wextra -I$(IDIR)
 PKGCONFIG ?= 
 LFLAGS := 
-LIBS := 
+LIBS := -lm
 
 # Defining directory
 IDIR := include
