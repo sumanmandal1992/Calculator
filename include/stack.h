@@ -1,22 +1,28 @@
 #ifndef __STACK_H__
 #define __STACK_H__
 
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-// Define stack using structure.
+typedef union _Info
+{
+	char operator;
+	double number;
+}Info;
+
 typedef struct _Stack
 {
-	int top;
-	unsigned capacity;
-	char *array;
-} Stack;
+	bool isOperator;
+	Info *info;
+	struct _Stack *next;
+}Stack;
 
-// Prototype declaration of functions.
-Stack *createStack(unsigned);
-void push(Stack*, char);
-char pop(Stack*);
-int isEmpty(Stack*);
-char peek(Stack*);
+
+Stack *newStack(void);
+void push(Stack **top, Info *info, bool isOperator);
+void pop(Stack **top);
+void display(Stack *top);
 
 
 #endif

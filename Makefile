@@ -1,7 +1,7 @@
 DEBUG := g
 CC := gcc
 
-CFLAGS = -std=c2x -Wall -fmax-errors=10 -Wextra -I$(IDIR)
+CFLAGS = -std=c2x -Wall -fmax-errors=10 -Wextra -I$(IDIR) -lm
 PKGCONFIG ?= 
 LFLAGS := 
 LIBS := 
@@ -13,11 +13,11 @@ ODIR := obj
 BINDIR := bin
 RDIR := release
 
-_DEPS := calculation.h error.h stack.h
+_DEPS := calculation.h validate.h stack.h
 DEPS := $(patsubst %, $(IDIR)/%, $(_DEPS))
 
 # Required for creating directory
-_OBJ := main.o calculation.o stack.o error.o
+_OBJ := main.o calculation.o stack.o validate.o
 OBJ := $(patsubst %, $(ODIR)/%, $(_OBJ))
 
 # Required for creating directory

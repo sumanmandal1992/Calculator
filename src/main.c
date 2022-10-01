@@ -1,33 +1,18 @@
-#include<stdio.h>
+#include "stack.h"
 #include "calculation.h"
 #define MAX 100
 
-// Function prototype.
-void eatspace(char*);
-
-// The main function.
 int main()
 {
-	char a[MAX];
-	long double ans;
-	printf("Enter your expression:\n");
-	fgets(a, MAX, stdin);
-	eatspace(a);
-	ans = calculate(a);
-	printf("\nResult: %Lf\n\n", ans);
+	char exp[MAX];
+	long double result;
+	printf("Enter expression:\n");
+	fgets(exp, MAX, stdin);
+	eatSpace(exp);
+	result = calculation(exp);
+	if((int)result == result)
+		printf("Result is: %.0Lf\n\n", result);
+	else
+		printf("Result is: %Lf\n\n", result);
 	return 0;
-}
-
-void eatspace(char *a)
-{
-	int i=0, j;
-	while(a[i]!='\0'){
-			if(a[i]==' ' || a[i]=='\t' || a[i]=='\n'){
-					j=i;
-			for(;a[j]!='\0';j++){
-				a[j]=a[j+1];
-			}
-		}
-		i++;
-	}
 }

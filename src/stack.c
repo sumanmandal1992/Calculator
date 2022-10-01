@@ -1,42 +1,93 @@
 #include "stack.h"
 
-// Creation of stack.
-Stack *createStack(unsigned capacity){
-	Stack *stack = (Stack*)malloc(sizeof(Stack));
-	if(!stack)
-		return NULL;
 
-	stack->top = -1;
-	stack->capacity = capacity;
+/*
+ * Prototype declaration.
+ */
+static bool isEmpty(Stack *top);
+static Stack *create();
 
-	stack->array = (char*)malloc(stack->capacity * sizeof(char));
-	if(!stack->array)
-		return NULL;
 
-	return stack;
-}
-
-// Push a element into stack.
-void push(Stack *stack, char operator){
-	stack->array[++stack->top] = operator;
-}
-
-// Delete a element from stack.
-char pop(Stack *stack){
-	if(!isEmpty(stack))
-		return stack->array[stack->top--];
-	return '$';
-}
-
-// Check stack, is it empty or not.
-int isEmpty(Stack *stack)
+Stack *newStack(void)
 {
-	return stack->top==-1;
+	return NULL;
 }
 
-// Peek a element from stack.
-char peek(Stack *stack)
+static Stack *create()
 {
-	return stack->array[stack->top];
+	Stack *temp = (Stack *)malloc(sizeof(Stack));
+	if(temp == NULL) {
+		printf("Failed to create stack\n");
+		return NULL;
+	}
+
+	temp->info = (Info *)malloc(sizeof(Info));
+	if(temp->info == NULL) {
+		printf("Failed to create element\n");
+		return NULL;
+	}
+	temp->isOperator = false;
+	temp->next = NULL;
+	return temp;
 }
 
+
+void push(Stack **top, Info *info, bool isOperator)
+{
+	Stack *temp = create();
+
+	if(temp == NULL) {
+		printf("Unable to push element...\n");
+		return;
+	}
+
+	if(isOperator)
+	{
+		temp->info->operator = info->operator;
+		temp->isOperator = isOperator;
+	}
+	else
+	{
+		temp->info->number = info->number;
+		temp->isOperator = isOperator;
+	}
+
+	if(*top != NULL)
+		temp->next = *top;
+	*top = temp;
+	temp = NULL;
+}
+
+void pop(Stack **top)
+{
+	Stack *temp = *top;
+
+	if(!isEmpty(*top)) {
+		*top = (*top)->next;
+		free(temp->info);
+		free(temp);
+	} else {
+		printf("Stack is empty...\n");
+	}
+}
+
+static bool isEmpty(Stack *top)
+{
+	if(top == NULL)
+		return true;
+	else
+		return false;
+}
+
+void display(Stack *top)
+{
+	Stack *temp = top;
+	while(temp != NULL)
+	{
+		if(temp->isOperator)
+			printf("%c\n", temp->info->operator);
+		else
+			printf("%lf\n", temp->info->number);
+		temp = temp->next;
+	}
+}

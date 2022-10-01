@@ -1,177 +1,268 @@
-#include<stdio.h>
-#include "stack.h"
+#include <string.h>
+#include <math.h>
 #include "calculation.h"
-#include "error.h"
+#include "stack.h"
+#include "validate.h"
 
-// Verify operand.
-int isOperand(char ch)
+
+/*
+ * Declaring prototypes.
+ */
+static int precedence(char operator);
+static double calculate(double num1,  double num2, char operator);
+static double unaryop(double number, char operator);
+
+
+void eatSpace(char *exp)
 {
-	return ((ch>='0' && ch<='9') || ch=='.');
+	int pos = 0, track = 0;
+	while(exp[pos] != '\0') {
+		if(exp[pos] != ' ' && exp[pos] != '\t' && exp[pos] != '\n') {
+			if(track != pos)
+				exp[track] = exp[pos];
+			track++;
+		}
+		pos++;
+	}
+	exp[track] = '\0';
 }
 
-// Define precedence of operators.
-int prec(char ch)
+static int precedence(char operator)
 {
-	switch(ch){
+	switch(operator) {
 		case '+':
 		case '-':
 			return 1;
-
-		case '*':
+			break;
 		case '/':
+		case '*':
 			return 2;
-
+			break;
 		case '^':
 			return 3;
 	}
 	return -1;
 }
 
-// Convert string to double.
-double strtoD(char *a)
+static double unaryop(double number, char operator)
 {
-	double s = 0, d = 1;
-	int i = 0, j = 0;
-	while(a[j] != '\0') {
-		if(a[j] == '.') {
-			while(a[i] != '.') {
-				s = s * 10 + (a[i] - '0');
-				i++;
-			}
-			i++;
-			while(a[i] != '\0') {
-				d *= 10.0;
-				s = s + (a[i] - '0') / d;
-				i++;
-			}
-		}
-		j++;
-	}
-
-	while(a[i] != '\0'){
-		s = s * 10 + (a[i] - '0');
-		i++;
-	}
-	return s;
-}
-
-// Calculate length of string.
-int len(char *str)
-{
-	int i=0;
-	while(str[i]!='\0')
-		i++;
-	return i;
-}
-
-// Calculation of the expression.
-void operation(long double *array, int position, char operator)
-{
-	switch(operator){
+	switch(operator) {
 		case '+':
-			array[(position-1)] = array[(position-1)] + array[position];
-			array[position] = 0;
-			break;
-
+			return number;
 		case '-':
-			array[(position-1)] = array[(position-1)] - array[position];
-			array[position] = 0;
-			break;
-
-		case '*':
-			array[(position-1)] = array[(position-1)] * array[position];
-			array[position] = 0;
-			break;
-
-		case '/':
-			array[(position-1)] = array[(position-1)] / array[position];
-			array[position]=0;
-			break;
-
-		case '^':
-			array[(position-1)] = pow(array[(position-1)], array[position]);
-			array[position] = 0;
-			break;
-
-		default:
-			return;
+			return -number;
 	}
+	return 0;
 }
 
-// Power function
-double pow(double n, double p)
+static double calculate(double num1,  double num2, char operator)
 {
-	int i;
-	double r=1;
-	for(i=0; i<p; i++)
-		r=r*n;
-	return r;
+	switch(operator) {
+		case '+':
+			return (num2 + num1);
+		case '-':
+			return (num2 - num1);
+			
+		case '/':
+			return (num2 / num1);
+			
+		case '*':
+			return (num2 * num1);
+			
+		case '^':
+			return pow(num2, num1);
+	}
+	return -1;
 }
 
-// Infix to postfix operation and calculateion.
-long double calculate(char *exp)
+long double calculation(char *exp)
 {
-	int i=0, j=0, k=0;
-	char temp[len(exp)];
-	long double operand[len(exp)];
+	int pos, trackd;
+	char operator, digit[10], unary;
+	bool isdigit = false;
+	double num1, num2, result;
 
-	// Create a stack of capacity equal to expression size.
-	Stack *stack = createStack(len(exp)/2);
-	if(stack==NULL){
-		printf("Stack creation failed\n");
+	Stack *topo, *topd, *trackop;
+	Info *info = (Info *)malloc(sizeof(Info));
+
+	/*
+	 * Initializing stack.
+	 */
+	topo = newStack();
+	topd = newStack();
+
+	/*
+	 * Check for valid expression.
+	 */
+	if(!isValidExp(exp)) {
+		printf("Invalid expression...\n");
 		exit(1);
 	}
 
-	// Travers expression and calculate.
-	while(exp[i]!='\0'){
-
-		// Check if the expression is valid.
-		if(!isvalidexp(exp)){
-			printf("Systax error or use parenthesis for unary operators. Eg. (-a)\n");
+	/*
+	 * Initializing variables before use.
+	 */
+	pos = 0;
+	trackd = 0;
+	unary = '\0';
+	while(exp[pos] != '\0') {
+		/*
+		 * Collecting and converting to digits.
+		 */
+		isdigit = false;
+		if(isDigit(exp[pos])) {
+			isdigit = true;
 		}
-
-		// If the scanned character is an operand, add it to operand array.
-		if(isOperand(exp[i])){
-			temp[j++]=exp[i];
-			temp[j]='\0';
-			operand[k]=strtoD(temp);
-		}
-
-		// If the scanned character is an '(', push it to stack.
-		else if(exp[i]=='('){
-			push(stack, exp[i]);
-		}
-		// If the scanned character is an ')', pop and calculate operation until an '(' is encountered.
-		else if(exp[i]==')'){
-			while(!isEmpty(stack) && peek(stack) != '('){
-				operation(operand, k, pop(stack));
-				k--;
+		if(isdigit) {
+			digit[trackd++] = exp[pos];
+		} 
+		if(exp[pos+1] == '\0')
+			isdigit = false;
+		if(!isdigit) {
+			digit[trackd] = '\0';
+			trackd = 0;
+			if(strlen(digit) > 0 || exp[pos] == '\0') {
+				if(unary != '\0') {
+					info->number = unaryop(atof(digit), unary);
+					unary = '\0';
+				}
+				else
+					info->number = atof(digit);
+				push(&topd, info, false);
 			}
-			operation(operand, k, pop(stack));
-		}
-		else{ //An operator is encountered.
-			while(!isEmpty(stack) && prec(exp[i]) <= prec(peek(stack))){
-				operation(operand, k, pop(stack));
-				k--;
-			}
-			push(stack, exp[i]);
-			k++;
-			j=0;
 		}
 
-		i++;
+		/*
+		 * Collecting operators.
+		 */
+		if(isOperator(exp[pos])) {
+			/*
+			 * Push parenthesis into stack.
+			 */
+			if(exp[pos] == '(') {
+				info->operator = exp[pos];
+				push(&topo, info, true);
+				
+				pos++;
+				continue;
+			}
+			/*
+			 * Unary operator treatment.
+			 */
+			if(isOperator(exp[pos-1]) && exp[pos-1] != ')' && (exp[pos] != '(' || exp[pos] != ')')) {
+				unary = exp[pos];
+				pos++;
+				continue;
+			}
+
+			if(topo == NULL) {
+				if(exp[pos] == '-') {
+					unary = exp[pos];
+					info->operator = '+';
+					push(&topo, info, true);
+				} else {
+					info->operator = exp[pos];
+					push(&topo, info, true);
+				}
+
+			} else if(exp[pos] == ')') {
+				trackop = topo;
+				while(trackop->info->operator != '(') {
+					trackop = trackop->next;
+
+					num1 = topd->info->number;
+					num2 = topd->next->info->number;
+					operator = topo->info->operator;
+					result = calculate(num1, num2, operator);
+					info->number = result;
+
+					pop(&topd);
+					pop(&topd);
+					pop(&topo);
+					push(&topd, info, false);
+
+					if(trackop ==  NULL)
+						break;
+				}
+				if(topo != NULL)
+					pop(&topo);
+
+			} else if(precedence(exp[pos]) >= precedence(topo->info->operator)) {
+				if(exp[pos] == '-') {
+					unary = exp[pos];
+					info->operator = '+';
+					push(&topo, info, true);
+				} else {
+					info->operator = exp[pos];
+					push(&topo, info, true);
+				}
+
+			} else if(precedence(exp[pos]) < precedence(topo->info->operator)) {
+				trackop = topo;
+				while(trackop != NULL) {
+					if(precedence(exp[pos]) >= precedence(trackop->info->operator) || exp[pos] == ')')
+						break;
+					trackop = trackop->next;
+
+					num1 = topd->info->number;
+					if(topd->next != NULL)
+						num2 = topd->next->info->number;
+					else
+						num2 = 0.0;
+					operator = topo->info->operator;
+					result = calculate(num1, num2, operator);
+					info->number = result;
+
+					pop(&topd);
+					pop(&topd);
+					pop(&topo);
+
+					/*
+					 * Pushing number into stack;
+					 */
+					push(&topd, info, false);
+				}
+				/*
+				 * Pushing operator into stack;
+				 */
+				if(exp[pos] == '-') {
+					unary = exp[pos];
+					info->operator = '+';
+					push(&topo, info, true);
+				} else {
+					info->operator = exp[pos];
+					push(&topo, info, true);
+				}
+
+			}
+		}
+
+		pos++;
+
+		/*
+		 * Calculate rest of the stack expressions if exists;
+		 */
+		if(exp[pos] == '\0') {
+			trackop = topo;
+			while(trackop != NULL) {
+				trackop = trackop->next;
+
+				num1 = topd->info->number;
+				if(topd->next != NULL)
+					num2 = topd->next->info->number;
+				else
+					num2 = 0.0;
+				operator = topo->info->operator;
+				result = calculate(num1, num2, operator);
+				info->number = result;
+
+				pop(&topd);
+				pop(&topd);
+				pop(&topo);
+				push(&topd, info, false);
+			}
+		}
 	}
 
-	// pop all the operators from the stack.
-	while(!isEmpty(stack)){
-		operation(operand, k, pop(stack));
-		k--;
-	}
-	// Delete alocated stack memory when stack is emptied.
-	free(stack->array);
-	free(stack);
-
-	// Print output.
-	// printf("%lf\n",operand[0]);						
-	return operand[0];
-}									
+	return result;
+}
