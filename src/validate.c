@@ -40,10 +40,16 @@ bool isValidExp(char *exp)
 				return false;
 			else if((exp[pos+1] == '+' || exp[pos+1] == '-') && (exp[pos+2] == '*' || exp[pos+2] == '/' || exp[pos+2] == '^'))
 				return false;
+			else if(exp[pos+2] == ')' && exp[pos+1] != ')')
+				return false;
 		}
 
 		if(isOperator(exp[pos]) && isOperator(exp[pos+1]) && isOperator(exp[pos+2])) {
-			if((exp[pos] != '(' || exp[pos] != ')') && (exp[pos+1] != '(' || exp[pos+1] != ')') && (exp[pos+2] != '(' || exp[pos+2] != ')'))
+			if(
+					(exp[pos] == '*' ||  exp[pos] == '/' ||  exp[pos] == '^' ||  exp[pos] == '+' ||  exp[pos] == '-') && 
+					(exp[pos+1] == '*' ||  exp[pos+1] == '/' ||  exp[pos+1] == '^' ||  exp[pos+1] == '+' ||  exp[pos+1] == '-') && 
+					(exp[pos+2] == '*' ||  exp[pos+2] == '/' ||  exp[pos+2] == '^' ||  exp[pos+2] == '+' ||  exp[pos+2] == '-')
+				)
 				return false;
 		}
 
