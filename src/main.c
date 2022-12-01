@@ -5,14 +5,14 @@
 int main()
 {
 	char exp[MAX];
-	long double result;
+	double result;
 	printf("Enter expression:\n");
 	fgets(exp, MAX, stdin);
 	eatSpace(exp);
 	result = calculation(exp);
 	if((int)result == result)
-		printf("Result is: %.0Lf\n\n", result);
+		printf("Result is: %.0lf\n\n", result);
 	else
-		printf("Result is: %Lf\n\n", result);
+		printf("Result is: %lf\n\n", result);
 	return 0;
 }
