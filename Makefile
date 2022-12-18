@@ -27,10 +27,10 @@ BIN := $(patsubst %, $(BINDIR)/%, $(_BIN))
 all: $(BIN)
 
 $(BIN): $(OBJ)
-	$(CC) -o $@ $(CFLAGS) $(LIBS) $^
+	$(CC) $(CFLAGS) $(LIBS) -o $@ $^
 
 $(ODIR)/%.o: $(SRCDIR)/%.c
-	$(CC) -c -o $@ $(CFLAGS) $(LFLAGS) $<
+	$(CC) $(CFLAGS) $(LFLAGS) -c -o $@ $<
 
 # Create obj directory if not exist
 $(OBJ): | $(ODIR)
