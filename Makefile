@@ -1,4 +1,4 @@
-DEBUG := g
+DEBUG := -g
 CC := gcc
 
 CFLAGS = -std=c2x -Wall -fmax-errors=10 -Wextra -I$(IDIR)
