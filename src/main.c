@@ -3,7 +3,8 @@
 #include <stdio.h>
 
 int main() {
-	double result = calculate("4/5+(4*4)");
+	char *exp = "4/5+(4*4)";
+	double result = calculate(exp);
 	printf("Result: %lf\n", result);
 	return 0;
 }

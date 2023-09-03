@@ -89,7 +89,6 @@ double calculate(char *exp) {
 		}
 	}
 
-	printf("%s\n", expm);
 	free(expm);
 
 	return popnum();
