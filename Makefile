@@ -1,23 +1,25 @@
+CC ?= gcc
 DBUG := -g
-CC := gcc
 
 CFLAGS = -std=c2x -Wall -fmax-errors=10 -Wextra -I$(IDIR)
 PKGCONFIG ?= 
+SDLCONFIG ?=
+MYSQLCONFIG ?=
 LFLAGS := 
 LIBS := -lm
 
-# Defining directory
 IDIR := include
 SRCDIR := src
 ODIR := obj
 BINDIR := bin
+DBUGDIR = dbug
 RDIR := release
 
-_DEPS := calculation.h validate.h stack.h
+_DEPS := %.h
 DEPS := $(patsubst %, $(IDIR)/%, $(_DEPS))
 
 # Required for creating directory
-_OBJ := main.o calculation.o stack.o validate.o
+_OBJ := main.o stack.o calculate.o
 OBJ := $(patsubst %, $(ODIR)/%, $(_OBJ))
 
 # Required for creating directory

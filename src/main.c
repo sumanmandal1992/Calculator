@@ -1,18 +1,9 @@
 #include "stack.h"
-#include "calculation.h"
-#define MAX 100
+#include "calculate.h"
+#include <stdio.h>
 
-int main()
-{
-	char exp[MAX];
-	double result;
-	printf("Enter expression:\n");
-	fgets(exp, MAX, stdin);
-	eatSpace(exp);
-	result = calculation(exp);
-	if((int)result == result)
-		printf("Result is: %.0lf\n\n", result);
-	else
-		printf("Result is: %lf\n\n", result);
+int main() {
+	double result = calculate("4/5+(4*4)");
+	printf("Result: %lf\n", result);
 	return 0;
 }

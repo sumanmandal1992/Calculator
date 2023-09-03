@@ -1,93 +1,102 @@
 #include "stack.h"
+#include <stdlib.h>
+#include <stdbool.h>
+
+typedef union {
+	double num;
+	char op;
+}el;
+
+typedef struct _Node{
+	el *elem;
+	struct _Node *next;
+}OpStack, NumStack;
 
 
-/*
- * Prototype declaration.
- */
-static bool isEmpty(Stack *top);
-static Stack *create();
+static OpStack *ophead = NULL;
+static NumStack *numhead = NULL;
 
-
-Stack *newStack(void)
-{
-	return NULL;
+static bool isemptyop() {
+	if(ophead == NULL) return true;
+	return false;
 }
 
-static Stack *create(void)
-{
-	Stack *temp = (Stack *)malloc(sizeof(Stack));
-	if(temp == NULL) {
-		printf("Failed to create stack\n");
-		return NULL;
-	}
-
-	temp->info = (Info *)malloc(sizeof(Info));
-	if(temp->info == NULL) {
-		printf("Failed to create element\n");
-		return NULL;
-	}
-	temp->isOperator = false;
-	temp->next = NULL;
-	return temp;
+static bool isemptynum() {
+	if(numhead == NULL) return true;
+	return false;
 }
 
-
-void push(Stack **top, Info *info, bool isOperator)
-{
-	Stack *temp = create();
-
-	if(temp == NULL) {
-		printf("Unable to push element...\n");
-		return;
-	}
-
-	if(isOperator)
-	{
-		temp->info->operator = info->operator;
-		temp->isOperator = isOperator;
-	}
-	else
-	{
-		temp->info->number = info->number;
-		temp->isOperator = isOperator;
-	}
-
-	if(*top != NULL)
-		temp->next = *top;
-	*top = temp;
-	temp = NULL;
+static struct _Node *create() {
+	struct _Node *tmp = (struct _Node *)malloc(sizeof(struct _Node));
+	tmp->next = NULL;
+	tmp->elem = (el*)malloc(sizeof(el)) ;
+	tmp->elem->num = 0.0;
+	return tmp;
 }
 
-void pop(Stack **top)
-{
-	Stack *temp = *top;
+void pushop(char op) {
+	OpStack *tmp = create();
+	tmp->elem->op = op;
+	if(isemptyop()) ophead = tmp;
 
-	if(!isEmpty(*top)) {
-		*top = (*top)->next;
-		free(temp->info);
-		free(temp);
-	} else {
-		printf("Stack is empty...\n");
+	else {
+		tmp->next = ophead;
+		ophead = tmp;
 	}
 }
 
-static bool isEmpty(Stack *top)
-{
-	if(top == NULL)
-		return true;
-	else
-		return false;
+void pushnum(double num) {
+	NumStack *tmp = create();
+	tmp->elem->num = num;
+
+	if(isemptynum()) numhead = tmp;
+	else {
+		tmp->next = numhead;
+		numhead = tmp;
+	}
 }
 
-void display(Stack *top)
-{
-	Stack *temp = top;
-	while(temp != NULL)
-	{
-		if(temp->isOperator)
-			printf("%c\n", temp->info->operator);
-		else
-			printf("%lf\n", temp->info->number);
-		temp = temp->next;
+char popop() {
+	if(isemptyop()) return '\0';
+	char op = ophead->elem->op;
+	OpStack *tmp = ophead;
+	ophead = ophead->next;
+	free(tmp->elem);
+	free(tmp);
+	return op;
+}
+
+double popnum() {
+	if(isemptynum()) return -0.000000;
+	double num = numhead->elem->num;
+	NumStack *tmp = numhead;
+	numhead = numhead->next;
+	free(tmp->elem);
+	free(tmp);
+	return num;
+}
+
+char topop() {
+	if(isemptyop()) return '\0';
+	return ophead->elem->op;
+}
+
+void display(choice ch) {
+	struct _Node *tmp = NULL;
+	if(ch == dispop) {
+		tmp = ophead;
+		while(tmp != NULL) {
+			printf("%c\n", tmp->elem->op);
+			tmp = tmp->next;
+		}
+		printf("\n");
+	} else if(ch == dispnum) {
+		tmp = numhead;
+		while(tmp != NULL) {
+			printf("%lf\n", tmp->elem->num);
+			tmp = tmp->next;
+		}
+		printf("\n");
 	}
+
 }

@@ -1,28 +1,15 @@
 #ifndef __STACK_H__
 #define __STACK_H__
-
+#define MAX 10
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
 
-typedef union _Info
-{
-	char operator;
-	double number;
-}Info;
+typedef enum stackchoice{dispop, dispnum} choice;
 
-typedef struct _Stack
-{
-	bool isOperator;
-	Info *info;
-	struct _Stack *next;
-}Stack;
-
-
-Stack *newStack(void);
-void push(Stack **top, Info *info, bool isOperator);
-void pop(Stack **top);
-void display(Stack *top);
-
+void pushop(char op);
+void pushnum(double num);
+char popop();
+double popnum();
+char topop();
+void display(choice ch);
 
 #endif
