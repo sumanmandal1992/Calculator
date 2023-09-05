@@ -1,7 +1,7 @@
 CC ?= gcc
 DBUG := -g
 
-CFLAGS = -std=c2x -Wall -fmax-errors=10 -Wextra -I$(IDIR)
+CFLAGS = -std=c2x -Wall -fmax-errors=10 -Wextra -I$(IDIR) $(DBUG)
 PKGCONFIG ?= 
 SDLCONFIG ?=
 MYSQLCONFIG ?=
