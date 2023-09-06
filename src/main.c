@@ -3,8 +3,10 @@
 #include <stdio.h>
 
 int main() {
-	char *exp = "4/5+(4*4)";
+	char exp[100];
+	printf("Type your expression: ");
+	fgets(exp, 100, stdin);
 	double result = calculate(exp);
-	printf("Result: %lf\n", result);
+	print(result);
 	return 0;
 }

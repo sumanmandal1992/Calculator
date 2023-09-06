@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
+#include <ctype.h>
 
 static int precedence(char op) {
 	switch (op) {
@@ -58,6 +59,15 @@ double eval(char op, double num1, double num2) {
 	return result;
 }
 
+static void error(char *expm) {
+	printf("Invalid expression...\n");
+	printf("Check the expression and retype it...\n");
+	while(popop() != '\0');
+	while(popnum() != -0.0);
+	free(expm);
+	exit(1);
+}
+
 double calculate(char *exp) {
 	char *expm = NULL;
 	
@@ -76,10 +86,9 @@ double calculate(char *exp) {
 			if(ch == '(') pushop(ch);
 			else if(ch == ')') while((curop = popop()) != '(') {
 				double ev = eval(curop, popnum(), popnum());
+				// Checking for stack underflow
 				if(ev == -0.0) {
-					free(expm);
-					printf("Invalid expression...\n");
-					exit(1);
+					error(expm);
 				}
 				pushnum(ev);
 			}
@@ -90,22 +99,36 @@ double calculate(char *exp) {
 			}
 		}
 		else if (ch == ' ') continue;
-		else {
+		else if(isdigit(ch)) {
 			num[j++] = ch;
 			while(!isoperator(ch = expm[i++])) num[j++] = ch;
 			i--;
 			num[j] = '\0';
 			pushnum(atof(num));
-		}
-	}
+		} 
+		else if(isalpha(ch)) error(expm);
+	} // end while
 
+	const double res = popnum();
+	// Checking for stack underflow
+	if(popop() != '\0' || popnum() != -0.0) {
+		error(expm);
+	}
 	free(expm);
-	if(popop() != '\0') {
-		while(popop() != '\0');
-		while(popnum() != -0.0);
-		printf("Invalid expression...\n");
-		exit(1);
-	}
 
-	return popnum();
+	return res;
+}
+
+void print(double result) {
+	if(round(result*10000000000)/10000000000 < result || round(result*10000000000)/10000000000 > result) printf("Result: %.10lf\n", result);
+	else if(round(result*1000000000)/1000000000 < result || round(result*1000000000)/1000000000 > result) printf("Result: %.9lf\n", result);
+	else if(round(result*10000000)/10000000 < result || round(result*10000000)/10000000 > result) printf("Result: %.8lf\n", result);
+	else if(round(result*1000000)/1000000 < result || round(result*1000000)/1000000 > result) printf("Result: %.7lf\n", result);
+	else if(round(result*100000)/100000 < result || round(result*100000)/100000 > result) printf("Result: %lf\n", result);
+	else if(round(result*10000)/10000 < result || round(result*10000)/10000 > result) printf("Result: %.5lf\n", result);
+	else if(round(result*1000)/1000 < result || round(result*1000)/1000 > result) printf("Result: %.4lf\n", result);
+	else if(round(result*100)/100 < result || round(result*100)/100 > result) printf("Result: %.3lf\n", result);
+	else if(round(result*10)/10 < result || round(result*10)/10 > result) printf("Result: %.2lf\n", result);
+	else if(round(result) > result || round(result) < result) printf("Result: %.1lf\n", result);
+	else printf("Result: %.0lf\n", result);
 }
