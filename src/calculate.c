@@ -104,20 +104,15 @@ double calculate(char *exp) {
 			} else if(ch == ')') while((curop = popop()) != '(') {
 				double ev = eval(curop, popnum(), popnum());
 				// Checking for stack underflow
-				if(ev == -0.0) {
-					error(expm);
-				}
+				if(ev == -0.0) error(expm);
 				pushnum(ev);
-			} 
-			else if(precedence(ch) > precedence(topop())) pushop(ch);
+			} else if(precedence(ch) > precedence(topop())) pushop(ch);
 			else if(precedence(ch) <= precedence(topop())) {
 				while(precedence(ch) <= precedence(topop())) pushnum(eval(popop(), popnum(), popnum()));
 				pushop(ch);
-			}
+			} 
 			if (isoperator(expm[i]) && (expm[i] == '+' || expm[i] == '-')) uniop = expm[i++];
-
-		}
-		else if(isdigit(ch)) {
+		} else if(isdigit(ch)) {
 			if( i>=3 && isoperator(expm[i-2]) && isoperator(expm[i-3]) && (expm[i-2] != '+' && expm[i-2] != '-' && expm[i-2] != '(')) error(expm);
 			num[j++] = ch;
 			while(!isoperator(ch = expm[i++])) num[j++] = ch;
@@ -125,8 +120,7 @@ double calculate(char *exp) {
 			num[j] = '\0';
 			if(uniop != '\0') pushnum(unaryop(atof(num), uniop));
 			else pushnum(atof(num));
-		} 
-		else if(isalpha(ch)) error(expm);
+		} else if(isalpha(ch)) error(expm);
 	} // end while
 
 	const double res = popnum();
