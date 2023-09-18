@@ -84,6 +84,7 @@ static void error(char *expm) {
 double calculate(char *exp) {
 	char *expm = NULL;
 	
+	if(exp[strlen(exp)-1] == '\n') exp[strlen(exp)-1] = '\0';
 	expm = (char *)malloc(sizeof(char)*strlen(exp)+2);
 	expm[0] = '(';
 	expm[1] = '\0';
@@ -92,35 +93,38 @@ double calculate(char *exp) {
 	strcat(expm, ")");
 
 	int i = 0, j = 0;
-	char ch, curop, num[20];
+	char ch, curop, num[20], uniop = '\0';
 	while((ch = expm[i++]) != '\0') {
 		j = 0;
 		if (ch == ' ') continue;
 		else if(isoperator(ch)) {
-			if(ch == '(') pushop(ch);
-			else if(ch == ')') while((curop = popop()) != '(') {
+			if(ch == '(') {
+				if(isoperator(expm[i]) && (expm[i] == '+' || expm[i] == '-')) uniop = expm[i++];
+				pushop(ch);
+			} else if(ch == ')') while((curop = popop()) != '(') {
 				double ev = eval(curop, popnum(), popnum());
 				// Checking for stack underflow
 				if(ev == -0.0) {
 					error(expm);
 				}
 				pushnum(ev);
-			}
+			} 
 			else if(precedence(ch) > precedence(topop())) pushop(ch);
 			else if(precedence(ch) <= precedence(topop())) {
 				while(precedence(ch) <= precedence(topop())) pushnum(eval(popop(), popnum(), popnum()));
 				pushop(ch);
 			}
+			if (isoperator(expm[i]) && (expm[i] == '+' || expm[i] == '-')) uniop = expm[i++];
+
 		}
 		else if(isdigit(ch)) {
-			if(isoperator(expm[i-2]) && isoperator(expm[i-3]) && (expm[i-2] != '+' && expm[i-2] != '-')) {
-				error(expm);
-			}
+			if( i>=3 && isoperator(expm[i-2]) && isoperator(expm[i-3]) && (expm[i-2] != '+' && expm[i-2] != '-' && expm[i-2] != '(')) error(expm);
 			num[j++] = ch;
 			while(!isoperator(ch = expm[i++])) num[j++] = ch;
 			i--;
 			num[j] = '\0';
-			pushnum(atof(num));
+			if(uniop != '\0') pushnum(unaryop(atof(num), uniop));
+			else pushnum(atof(num));
 		} 
 		else if(isalpha(ch)) error(expm);
 	} // end while
