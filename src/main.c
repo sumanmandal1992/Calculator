@@ -1,4 +1,3 @@
-#include "stack.h"
 #include "calculate.h"
 #include <stdio.h>
 

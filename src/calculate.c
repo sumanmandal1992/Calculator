@@ -35,6 +35,19 @@ static bool isoperator(char el) {
 	return false;
 }
 
+static double unaryop(double num, char op) {
+	double n = 0.0;
+	switch(op) {
+		case '+':
+			n = num;
+			break;
+		case '-':
+			n = -num;
+			break;
+	}
+	return n;
+}
+
 double eval(char op, double num1, double num2) {
 	double result = 0.0;
 	switch(op) {
@@ -82,7 +95,8 @@ double calculate(char *exp) {
 	char ch, curop, num[20];
 	while((ch = expm[i++]) != '\0') {
 		j = 0;
-		if(isoperator(ch)) {
+		if (ch == ' ') continue;
+		else if(isoperator(ch)) {
 			if(ch == '(') pushop(ch);
 			else if(ch == ')') while((curop = popop()) != '(') {
 				double ev = eval(curop, popnum(), popnum());
@@ -98,8 +112,10 @@ double calculate(char *exp) {
 				pushop(ch);
 			}
 		}
-		else if (ch == ' ') continue;
 		else if(isdigit(ch)) {
+			if(isoperator(expm[i-2]) && isoperator(expm[i-3]) && (expm[i-2] != '+' && expm[i-2] != '-')) {
+				error(expm);
+			}
 			num[j++] = ch;
 			while(!isoperator(ch = expm[i++])) num[j++] = ch;
 			i--;
