@@ -113,7 +113,7 @@ double calculate(char *exp) {
 			} 
 			if (isoperator(expm[i]) && (expm[i] == '+' || expm[i] == '-')) uniop = expm[i++];
 		} else if(isdigit(ch)) {
-			if( i>=3 && isoperator(expm[i-2]) && isoperator(expm[i-3]) && (expm[i-2] != '+' && expm[i-2] != '-' && expm[i-2] != '(')) error(expm);
+			if( i>=3 && isoperator(expm[i-2]) && isoperator(expm[i-3]) && (expm[i-2] != '+' && expm[i-2] != '-' && expm[i-2] != '(' && expm[i-3] != ')')) error(expm);
 			num[j++] = ch;
 			while(!isoperator(ch = expm[i++])) num[j++] = ch;
 			i--;
