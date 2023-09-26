@@ -95,7 +95,6 @@ double calculate(char *exp) {
 	int i = 0, j = 0;
 	char ch, curop, num[20], uniop = '\0';
 	while((ch = expm[i++]) != '\0') {
-		j = 0;
 		if (ch == ' ') continue;
 		else if(isoperator(ch)) {
 			if(ch == '(') {
@@ -113,6 +112,7 @@ double calculate(char *exp) {
 			} 
 			if (isoperator(expm[i]) && (expm[i] == '+' || expm[i] == '-')) uniop = expm[i++];
 		} else if(isdigit(ch)) {
+			j = 0;
 			if( i>=3 && isoperator(expm[i-2]) && isoperator(expm[i-3]) && (expm[i-2] != '+' && expm[i-2] != '-' && expm[i-2] != '(' && expm[i-3] != ')')) error(expm);
 			num[j++] = ch;
 			while(!isoperator(ch = expm[i++])) num[j++] = ch;
