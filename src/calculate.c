@@ -1,9 +1,9 @@
 #include "calculate.h"
 #include "stack.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <math.h>
 #include <ctype.h>
 
@@ -67,7 +67,7 @@ double eval(char op, double num1, double num2) {
 			result = pow(num1, num2);
 			break;
 		default:
-			return -0.000000;
+			exit(0);
 	}
 	return result;
 }
@@ -85,6 +85,12 @@ double calculate(char *exp) {
 	char *expm = NULL;
 	
 	if(exp[strlen(exp)-1] == '\n') exp[strlen(exp)-1] = '\0';
+
+	if(strlen(exp) <= 0) {
+		printf("No expression given...\n");
+		exit(0);
+	}
+
 	expm = (char *)malloc(sizeof(char)*strlen(exp)+2);
 	expm[0] = '(';
 	expm[1] = '\0';

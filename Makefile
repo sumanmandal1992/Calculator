@@ -15,6 +15,7 @@ BINDIR := bin
 DBUGDIR = dbug
 RDIR := release
 
+# Required for creating directory
 _DEPS := %.h
 DEPS := $(patsubst %, $(IDIR)/%, $(_DEPS))
 
