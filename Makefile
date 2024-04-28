@@ -1,56 +1,68 @@
 CC ?= gcc
-DBUG := -g
 
-CFLAGS = -std=c2x -Wall -fmax-errors=10 -Wextra -I$(IDIR) $(DBUG)
+DBGCFLAGS := -g -O0 -DDEBUG
+RELCFLAGS := -O3 -DNDEBUG
+CFLAGS = -std=c2x -Wall -fmax-errors=10 -Wextra -I$(IDIR)
 PKGCONFIG ?= 
 SDLCONFIG ?=
 MYSQLCONFIG ?=
 LFLAGS := 
 LIBS := -lm
 
+# Project directories
 IDIR := include
 SRCDIR := src
-ODIR := obj
 BINDIR := bin
-DBUGDIR = dbug
-RDIR := release
+DBGDIR := debug
+RELDIR := release
 
-# Required for creating directory
+# Header files
 _DEPS := %.h
 DEPS := $(patsubst %, $(IDIR)/%, $(_DEPS))
 
-# Required for creating directory
-_OBJ := main.o stack.o calculate.o
-OBJ := $(patsubst %, $(ODIR)/%, $(_OBJ))
+# Object files
+_OBJS := main.o calculate.o stack.o
+RELOBJS := $(patsubst %,$(RELDIR)/%,$(_OBJS))
+DBGOBJS := $(patsubst %,$(DBGDIR)/%,$(_OBJS))
 
-# Required for creating directory
-_BIN := calculate
-BIN := $(patsubst %, $(BINDIR)/%, $(_BIN))
+# Executable files
+_BIN := calc
+DBGEXE := $(patsubst %,$(DBGDIR)/$(BINDIR)/%,$(_BIN))
+RELEXE := $(patsubst %,$(RELDIR)/$(BINDIR)/%,$(_BIN))
 
-all: $(BIN)
+# Default build
+all: prep $(RELEXE) $(DBGEXE)
 
-$(BIN): $(OBJ)
-	$(CC) $(CFLAGS) $(LIBS) -o $@ $^
+# Release build rule
+$(RELEXE): $(RELOBJS)
+	$(CC) $(CFLAGS) $(RELCFLAGS) $(LIBS) -o $@ $^
 
-$(ODIR)/%.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) $(LFLAGS) -c -o $@ $<
+$(RELDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) $(RELCFLAGS) $(LFLAGS) -c -o $@ $<
 
-# Create obj directory if not exist
-$(OBJ): | $(ODIR)
+# Debug build rule
+$(DBGEXE): $(DBGOBJS)
+	$(CC) $(CFLAGS) $(DBGCFLAGS) $(LIBS) -o $@ $^
 
-$(ODIR):
-	mkdir $(ODIR)
+$(DBGDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) $(DBGCFLAGS) $(LFLAGS) -c -o $@ $<
 
-# Create bin directory if not exist
-$(BIN): | $(BINDIR)
+# Create directories if not exist
+prep:
+	@mkdir -p $(DBGDIR)/$(BINDIR) $(RELDIR)/$(BINDIR)
 
-$(BINDIR):
-	mkdir $(BINDIR)
-
+# Run exe
 run:
-	./$(BINDIR)/$(_BIN)
+	./$(RELEXE)
 
-.PHONY: clean
+.PHONY: clean init
 
 clean:
-	rm -f $(BIN) $(ODIR)/* 
+	rm -f $(RELEXE) $(RELOBJS) $(DBGEXE) $(DBGOBJS)
+
+# Create sample project
+init:
+	mkdir src include
+	echo -e "int main() {" >> ./src/main.c
+	echo -e "\treturn 0;" >> ./src/main.c
+	echo -e "}" >> ./src/main.c

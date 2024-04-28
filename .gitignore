@@ -1,5 +1,5 @@
 compile_commands.json
-obj/*
-bin/*
+debug/*
+release/*
 .cache/*
 vgcore*

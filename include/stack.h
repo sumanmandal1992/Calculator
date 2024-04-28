@@ -3,7 +3,7 @@
 #define MAX 10
 #include <stdio.h>
 
-typedef enum stackchoice{dispop, dispnum} choice;
+typedef enum stackchoice { dispop, dispnum } choice;
 
 void pushop(char op);
 void pushnum(double num);
