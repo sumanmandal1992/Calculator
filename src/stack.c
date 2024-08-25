@@ -1,34 +1,35 @@
 #include "stack.h"
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef union {
   double num;
   char op;
 } el;
 
-typedef struct _Node {
+typedef struct _Stack {
   el *elem;
-  struct _Node *next;
-} OpStack, NumStack;
+  struct _Stack *next;
+} Stack;
 
-static OpStack *ophead = NULL;
-static NumStack *numhead = NULL;
+static Stack *topop = NULL;
+static Stack *topnum = NULL;
 
 static bool isemptyop() {
-  if (ophead == NULL)
+  if (topop == NULL)
     return true;
   return false;
 }
 
 static bool isemptynum() {
-  if (numhead == NULL)
+  if (topnum == NULL)
     return true;
   return false;
 }
 
-static struct _Node *create() {
-  struct _Node *tmp = (struct _Node *)malloc(sizeof(struct _Node));
+static Stack *create() {
+  Stack *tmp = (Stack *)malloc(sizeof(Stack));
   tmp->next = NULL;
   tmp->elem = (el *)malloc(sizeof(el));
   tmp->elem->num = 0.0;
@@ -36,35 +37,35 @@ static struct _Node *create() {
 }
 
 void pushop(char op) {
-  OpStack *tmp = create();
+  Stack *tmp = create();
   tmp->elem->op = op;
   if (isemptyop())
-    ophead = tmp;
+    topop = tmp;
 
   else {
-    tmp->next = ophead;
-    ophead = tmp;
+    tmp->next = topop;
+    topop = tmp;
   }
 }
 
 void pushnum(double num) {
-  NumStack *tmp = create();
+  Stack *tmp = create();
   tmp->elem->num = num;
 
   if (isemptynum())
-    numhead = tmp;
+    topnum = tmp;
   else {
-    tmp->next = numhead;
-    numhead = tmp;
+    tmp->next = topnum;
+    topnum = tmp;
   }
 }
 
 char popop() {
   if (isemptyop())
     return '\0';
-  char op = ophead->elem->op;
-  OpStack *tmp = ophead;
-  ophead = ophead->next;
+  char op = topop->elem->op;
+  Stack *tmp = topop;
+  topop = topop->next;
   free(tmp->elem);
   free(tmp);
   return op;
@@ -72,32 +73,32 @@ char popop() {
 
 double popnum() {
   if (isemptynum())
-    return -0.000000;
-  double num = numhead->elem->num;
-  NumStack *tmp = numhead;
-  numhead = numhead->next;
+    return -0.0;
+  double num = topnum->elem->num;
+  Stack *tmp = topnum;
+  topnum = topnum->next;
   free(tmp->elem);
   free(tmp);
   return num;
 }
 
-char topop() {
+char peepop() {
   if (isemptyop())
     return '\0';
-  return ophead->elem->op;
+  return topop->elem->op;
 }
 
 void display(choice ch) {
-  struct _Node *tmp = NULL;
+  Stack *tmp = NULL;
   if (ch == dispop) {
-    tmp = ophead;
+    tmp = topop;
     while (tmp != NULL) {
       printf("%c\n", tmp->elem->op);
       tmp = tmp->next;
     }
     printf("\n");
   } else if (ch == dispnum) {
-    tmp = numhead;
+    tmp = topnum;
     while (tmp != NULL) {
       printf("%lf\n", tmp->elem->num);
       tmp = tmp->next;

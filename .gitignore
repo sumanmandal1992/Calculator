@@ -3,3 +3,5 @@ debug/*
 release/*
 .cache/*
 vgcore*
+bin/*
+obj/*

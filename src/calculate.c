@@ -1,11 +1,12 @@
 #include "calculate.h"
 #include "stack.h"
-#include <ctype.h>
 #include <math.h>
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 static int precedence(char op) {
   switch (op) {
@@ -86,19 +87,19 @@ static void error(char *expm) {
 double calculate(char *exp) {
   char *expm = NULL;
 
-  if (exp[strlen(exp) - 1] == '\n')
-    exp[strlen(exp) - 1] = '\0';
-
   if (strlen(exp) <= 0) {
     printf("No expression given...\n");
     exit(0);
   }
 
-  expm = (char *)malloc(sizeof(char) * strlen(exp) + 2);
+  if (exp[strlen(exp) - 1] == '\n')
+    exp[strlen(exp) - 1] = '\0';
+
+  expm = (char*)malloc(sizeof(char) * strlen(exp) + 2);
   expm[0] = '(';
   expm[1] = '\0';
   strcat(expm, exp);
-  expm = (char *)realloc(expm, sizeof(char) * strlen(expm) + 2);
+  expm = (char*)realloc(expm, sizeof(char) * strlen(expm) + 2);
   strcat(expm, ")");
 
   int i = 0, j = 0;
@@ -114,15 +115,16 @@ double calculate(char *exp) {
       } else if (ch == ')')
         while ((curop = popop()) != '(') {
           double ev = eval(curop, popnum(), popnum());
+
           // Checking for stack underflow
           if (ev == -0.0)
             error(expm);
           pushnum(ev);
         }
-      else if (precedence(ch) > precedence(topop()))
+      else if (precedence(ch) > precedence(peepop()))
         pushop(ch);
-      else if (precedence(ch) <= precedence(topop())) {
-        while (precedence(ch) <= precedence(topop()))
+      else if (precedence(ch) <= precedence(peepop())) {
+        while (precedence(ch) <= precedence(peepop()))
           pushnum(eval(popop(), popnum(), popnum()));
         pushop(ch);
       }
