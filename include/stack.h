@@ -2,7 +2,7 @@
 #define __STACK_H__
 #define MAX 10
 
-typedef enum stackchoice { dispop, dispnum } choice;
+typedef enum stackchoice { opstack, numstack } choice;
 
 void pushop(char op);
 void pushnum(double num);

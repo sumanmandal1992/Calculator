@@ -90,14 +90,14 @@ char peepop() {
 
 void display(choice ch) {
   Stack *tmp = NULL;
-  if (ch == dispop) {
+  if (ch == opstack) {
     tmp = topop;
     while (tmp != NULL) {
       printf("%c\n", tmp->elem->op);
       tmp = tmp->next;
     }
     printf("\n");
-  } else if (ch == dispnum) {
+  } else if (ch == numstack) {
     tmp = topnum;
     while (tmp != NULL) {
       printf("%lf\n", tmp->elem->num);
