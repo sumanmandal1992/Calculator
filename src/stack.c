@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct List {
+typedef struct _List {
 	void *data;
-	struct List *next;
+	struct _List *next;
 }List;
 
 struct _Stack {
@@ -70,7 +70,11 @@ void display(Stack *st, Type type) {
 }
 
 void clear_stack(Stack *st) {
+	List *tmp = NULL;
 	while (st->top != NULL) {
-		pop(st);
+		tmp = st->top;
+		st->top = st->top->next;
+		free(tmp->data);
+		free(tmp);
 	}
 }
