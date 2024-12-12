@@ -1,15 +1,15 @@
-#include "calculate.h"
+#include "parseexp.h"
 #include <stdio.h>
+#include <string.h>
+#define max 100
 
-int main(int argc, char *argv[]) {
-  double result = 0.0;
-  if(argc > 1) result = calculate(argv[1]);
-  else {
-    char exp[100];
-    printf("Type your expression: ");
-    fgets(exp, 100, stdin);
-    result = calculate(exp);
-  }
-  print(result);
-  return 0;
+
+int main()
+{
+	char exp[max];
+	printf("Enter infix expression: ");
+	fgets(exp, max, stdin);
+	exp[strlen(exp)-1] = '\0';
+	print(evaluate(exp));
+	return 0;
 }

@@ -1,14 +1,14 @@
 #ifndef __STACK_H__
 #define __STACK_H__
-#define MAX 10
 
-typedef enum stackchoice { opstack, numstack } choice;
+typedef struct _Stack Stack;
+typedef enum Type {num, op} Type;
 
-void pushop(char op);
-void pushnum(double num);
-char popop();
-double popnum();
-char peepop();
-void display(choice ch);
+Stack *createstack();
+void push(Stack *st, void *data);
+void *pop(Stack *st);
+void *peek(Stack *st);
+void display(Stack *st, Type type);
+void clear_stack(Stack *st);
 
 #endif

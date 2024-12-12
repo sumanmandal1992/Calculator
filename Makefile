@@ -21,7 +21,7 @@ _DEPS := %.h
 DEPS := $(patsubst %, $(IDIR)/%, $(_DEPS))
 
 # Object files
-_OBJS := main.o calculate.o stack.o
+_OBJS := main.o parseexp.o stack.o
 RELOBJS := $(patsubst %,$(RELDIR)/%,$(_OBJS))
 DBGOBJS := $(patsubst %,$(DBGDIR)/%,$(_OBJS))
 

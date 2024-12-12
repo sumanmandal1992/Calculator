@@ -1,108 +1,76 @@
 #include "stack.h"
-#include <stdbool.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-typedef union {
-  double num;
-  char op;
-} el;
+typedef struct List {
+	void *data;
+	struct List *next;
+}List;
 
-typedef struct _Stack {
-  el *elem;
-  struct _Stack *next;
-} Stack;
+struct _Stack {
+	List *top;
+	List *node;
+};
 
-static Stack *topop = NULL;
-static Stack *topnum = NULL;
-
-static bool isemptyop() {
-  if (topop == NULL)
-    return true;
-  return false;
+Stack *createstack() {
+	Stack *st = (Stack *)malloc(sizeof(Stack));
+	if(!st) return NULL;
+	st->top = NULL;
+	st->node = NULL;
+	return st;
 }
 
-static bool isemptynum() {
-  if (topnum == NULL)
-    return true;
-  return false;
+static List *createlist(void *data) {
+	List *node = (List*) malloc(sizeof(List));
+	if(!node) return NULL;
+	node->data = data;
+	node->next = NULL;
+	return node;
 }
 
-static Stack *create() {
-  Stack *tmp = (Stack *)malloc(sizeof(Stack));
-  tmp->next = NULL;
-  tmp->elem = (el *)malloc(sizeof(el));
-  tmp->elem->num = 0.0;
-  return tmp;
+static bool isempty(Stack *st) {
+	if(st->top == NULL) return true;
+	return false;
 }
 
-void pushop(char op) {
-  Stack *tmp = create();
-  tmp->elem->op = op;
-  if (isemptyop())
-    topop = tmp;
-
-  else {
-    tmp->next = topop;
-    topop = tmp;
-  }
+void push(Stack *st, void *data) {
+	st->node = createlist(data);
+	if(isempty(st)) st->top = st->node;
+	else {
+		st->node->next = st->top;
+		st->top = st->node;
+	}
 }
 
-void pushnum(double num) {
-  Stack *tmp = create();
-  tmp->elem->num = num;
-
-  if (isemptynum())
-    topnum = tmp;
-  else {
-    tmp->next = topnum;
-    topnum = tmp;
-  }
+void *pop(Stack *st) {
+	void *data = NULL;
+	if(isempty(st)) {
+		printf("Stack underflow\n");
+		exit(1);
+	}
+	data = st->top->data;
+	List *node = st->top;
+	st->top = st->top->next;
+	free(node);
+	return data;
 }
 
-char popop() {
-  if (isemptyop())
-    return '\0';
-  char op = topop->elem->op;
-  Stack *tmp = topop;
-  topop = topop->next;
-  free(tmp->elem);
-  free(tmp);
-  return op;
+void *peek(Stack *st) {
+	return st->top->data;
 }
 
-double popnum() {
-  if (isemptynum())
-    return -0.0;
-  double num = topnum->elem->num;
-  Stack *tmp = topnum;
-  topnum = topnum->next;
-  free(tmp->elem);
-  free(tmp);
-  return num;
+void display(Stack *st, Type type) {
+	List *node = st->top;
+	while (node != NULL) {
+		if(type == num) printf("%lf\n", *((double*)node->data));
+		else if(type == op) printf("%c\n", *((char*)node->data));
+		node = node->next;
+	}
 }
 
-char peepop() {
-  if (isemptyop())
-    return '\0';
-  return topop->elem->op;
-}
-
-void display(choice ch) {
-  Stack *tmp = NULL;
-  if (ch == opstack) {
-    tmp = topop;
-    while (tmp != NULL) {
-      printf("%c\n", tmp->elem->op);
-      tmp = tmp->next;
-    }
-    printf("\n");
-  } else if (ch == numstack) {
-    tmp = topnum;
-    while (tmp != NULL) {
-      printf("%lf\n", tmp->elem->num);
-      tmp = tmp->next;
-    }
-    printf("\n");
-  }
+void clear_stack(Stack *st) {
+	while (st->top != NULL) {
+		pop(st);
+	}
 }
