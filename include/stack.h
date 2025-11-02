@@ -2,13 +2,12 @@
 #define __STACK_H__
 
 typedef struct _Stack Stack;
-typedef enum Type {num, op} Type;
 
-Stack *createstack();
+Stack *create_stack();
 void push(Stack *st, void *data);
 void *pop(Stack *st);
 void *peek(Stack *st);
-void display(Stack *st, Type type);
-void clear_stack(Stack *st);
+void display(Stack *st);
+void free_stack(Stack *st);
 
 #endif

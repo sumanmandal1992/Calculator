@@ -54,14 +54,8 @@ static bool isvalid(char *exp) {
 		return false;
 	}
 
-	int j=0;
 	for (int i=0; i<len-1; i++) {
-		j = i+1;
-		if (isoperator(exp[i]) && isoperator(exp[j])) {
-			if ((exp[i] == '/' || exp[i] == '*') && (exp[j] == '/' || exp[j] == '*')) {
-				return false;
-			}
-		}
+		if (isoperator(exp[i]) && isoperator(exp[i+1])) return false;
 	}
 
 	int ob = 0, cb = 0;
@@ -70,7 +64,7 @@ static bool isvalid(char *exp) {
 			ob++;
 		} else if (exp[i] == ')') {
 			cb++;
-		} else if (!isoperator(exp[i]) && !isdigit(exp[i]) && exp[i] != '(' && exp[i] != ')') {
+		} else if (!isoperator(exp[i]) && !isdigit(exp[i]) && exp[i] != '(' && exp[i] != ')' && exp[i] != '.') {
 			return false;
 		}
 	}
@@ -105,48 +99,38 @@ double evaluate(char *exp) {
 		exit(1);
 	}
 
-	Stack *numbers = createstack();
-	Stack *operators = createstack();
-	char ob = '(';
-	push(operators, &ob);
+	Stack *num = create_stack();
+	Stack *op = create_stack();
+	push(op, "(");
 	for (int i=0; i<len; i++) {
 		if (isoperator(exp[i])) {
-			char curop = *((char*)peek(operators));
-			if (curop == '(') {
-				push(operators, &exp[i]);
-				curop = *((char*)peek(operators));
-			} else if (precedence(exp[i]) > precedence(curop)) {
-				push(operators, &exp[i]);
-				curop = *((char*)peek(operators));
-			} else {
-				while (curop != '(' && precedence(exp[i]) <= precedence(curop)) {
-					char exop = *((char*)pop(operators));
-					curop = *((char*)peek(operators));
-					double b = *((double*)pop(numbers));
-					double a = *((double*)pop(numbers));
-					double *ans = (double*)malloc(sizeof(double));
-					*ans = calc(exop, a, b);
-					push(numbers, ans);
+			if (peek(op) == NULL) push(op, &exp[i]);
+			else if (precedence(*(char*)peek(op)) < precedence(exp[i])) push(op, &exp[i]);
+			else {
+				while(precedence(*((char*)peek(op))) >= precedence(exp[i])) {
+					char o = *(char*)pop(op);
+					double n2 = *(double*)pop(num);
+					double n1 = *(double*)(char*)pop(num);
+					double r = calc(o, n1, n2);
+					push(num, (void*)&r);
+					printf("---- %lf ----\n", r);
 				}
-				push(operators, &exp[i]);
+				push(op, &exp[i]);
 			}
 		} else if (exp[i] == '(') {
-			push(operators, &exp[i]);
+			push(op, &exp[i]);
 		} else if (exp[i] == ')') {
-			char curop = *((char*)peek(operators));
-			while (curop != '(') {
-				char exop = *((char*)pop(operators));
-				curop = *((char*)peek(operators));
-				double b = *((double*)pop(numbers));
-				double a = *((double*)pop(numbers));
-				double *ans = malloc(sizeof(double));
-				*ans = calc(exop, a, b);
-				push(numbers, ans);
+			while (*(char*)peek(op) != '(') {
+				char o = *(char*)pop(op);
+				double b = *(double*)pop(num);
+				double a = *(double*)pop(num);
+				double r = calc(o, a, b);
+				push(num, (void*)&r);
 			}
-			pop(operators);
+			pop(op);
 		} else {
 			int j=i, d=i, l=0;
-			while (isdigit(exp[j])) {
+			while (isdigit(exp[j]) || exp[j] == '.') {
 				l++;
 				j++;
 			}
@@ -157,30 +141,28 @@ double evaluate(char *exp) {
 			}
 			digit[d] = '\0';
 
-			double *n = malloc(sizeof(double));
+			double *n = (double*)malloc(sizeof(double));
 			*n = atof(digit);
-			push(numbers, n);
-
+			push(num, (void*)n);
 			j--;
 			i = j;
 		}
 	}
-	char curop = *((char*)peek(operators));
+	char curop = *(char*)peek(op);
 	while (curop != '(') {
-		char exop = *((char*)pop(operators));
-		curop = *((char*)peek(operators));
-		double b = *((double*)pop(numbers));
-		double a = *((double*)pop(numbers));
-		double *ans = malloc(sizeof(double));
-		*ans = calc(exop, a, b);
-		push(numbers, ans);
+		char exop = *(char*)pop(op);
+		curop = *(char*)peek(op);
+		double b = *(double*)pop(num);
+		double a = *(double*)pop(num);
+		double ans = calc(exop, a, b);
+		push(num, (void*)&ans);
 	}
-	pop(operators);
+	pop(op);
 
-	double ans = *((double*)pop(numbers));
+	double ans = *(double*)pop(num);
 
-	clear_stack(operators);
-	clear_stack(numbers);
+	free_stack(op);
+	free_stack(num);
 
 	return ans;
 }

@@ -3,17 +3,17 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct _List {
+typedef struct _Node {
 	void *data;
-	struct _List *next;
-}List;
+	struct _Node *next;
+}Node;
 
 struct _Stack {
-	List *top;
-	List *node;
+	Node *top;
+	Node *node;
 };
 
-Stack *createstack() {
+Stack *create_stack() {
 	Stack *st = (Stack *)malloc(sizeof(Stack));
 	if(!st) return NULL;
 	st->top = NULL;
@@ -21,8 +21,8 @@ Stack *createstack() {
 	return st;
 }
 
-static List *createlist(void *data) {
-	List *node = (List*) malloc(sizeof(List));
+static Node *create_node(void *data) {
+	Node *node = (Node*) malloc(sizeof(Node));
 	if(!node) return NULL;
 	node->data = data;
 	node->next = NULL;
@@ -35,46 +35,48 @@ static bool isempty(Stack *st) {
 }
 
 void push(Stack *st, void *data) {
-	st->node = createlist(data);
-	if(isempty(st)) st->top = st->node;
+	Node *tmp = create_node(data);
+	if(!tmp) {
+		printf("Failed to create node...\n");
+		return;
+	}
+	if(isempty(st)) st->top = tmp;
 	else {
-		st->node->next = st->top;
-		st->top = st->node;
+		tmp->next = st->top;
+		st->top = tmp;
 	}
 }
 
 void *pop(Stack *st) {
-	void *data = NULL;
 	if(isempty(st)) {
 		printf("Stack underflow\n");
-		exit(1);
+		return NULL;
 	}
-	data = st->top->data;
-	List *node = st->top;
+	Node *tmp = st->top;
 	st->top = st->top->next;
-	free(node);
+	void *data = tmp->data;
+	free(tmp);
 	return data;
 }
 
 void *peek(Stack *st) {
+	if (isempty(st)) return NULL;
 	return st->top->data;
 }
 
-void display(Stack *st, Type type) {
-	List *node = st->top;
-	while (node != NULL) {
-		if(type == num) printf("%lf\n", *((double*)node->data));
-		else if(type == op) printf("%c\n", *((char*)node->data));
-		node = node->next;
+void display(Stack *st) {
+	Node *tmp = st->top;
+	while (tmp != NULL) {
+		printf("%lf\n", *(double*)tmp->data);
+		tmp = tmp->next;
 	}
 }
 
-void clear_stack(Stack *st) {
-	List *tmp = NULL;
+void free_stack(Stack *st) {
+	Node *tmp;
 	while (st->top != NULL) {
 		tmp = st->top;
 		st->top = st->top->next;
-		free(tmp->data);
 		free(tmp);
 	}
 }
