@@ -11,6 +11,6 @@ int main()
 	fgets(exp, max, stdin);
 	exp[strlen(exp)-1] = '\0';
 	print(evaluate(exp));
-	printf("\n\n");
+	printf("\n");
 	return 0;
 }

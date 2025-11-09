@@ -113,7 +113,6 @@ double evaluate(char *exp) {
 					double n1 = *(double*)(char*)pop(num);
 					double r = calc(o, n1, n2);
 					push(num, (void*)&r);
-					printf("---- %lf ----\n", r);
 				}
 				push(op, &exp[i]);
 			}
@@ -168,26 +167,21 @@ double evaluate(char *exp) {
 }
 
 void print(double result) {
-  if (round(result * 10000000000) / 10000000000 < result ||round(result * 10000000000) / 10000000000 > result)
-    printf("Result: %.10lf\n", result);
-  else if (round(result * 1000000000) / 1000000000 < result || round(result * 1000000000) / 1000000000 > result)
-    printf("Result: %.9lf\n", result);
-  else if (round(result * 10000000) / 10000000 < result || round(result * 10000000) / 10000000 > result)
-    printf("Result: %.8lf\n", result);
-  else if (round(result * 1000000) / 1000000 < result || round(result * 1000000) / 1000000 > result)
-    printf("Result: %.7lf\n", result);
-  else if (round(result * 100000) / 100000 < result || round(result * 100000) / 100000 > result)
-    printf("Result: %lf\n", result);
-  else if (round(result * 10000) / 10000 < result || round(result * 10000) / 10000 > result)
-    printf("Result: %.5lf\n", result);
-  else if (round(result * 1000) / 1000 < result || round(result * 1000) / 1000 > result)
-    printf("Result: %.4lf\n", result);
-  else if (round(result * 100) / 100 < result || round(result * 100) / 100 > result)
-    printf("Result: %.3lf\n", result);
-  else if (round(result * 10) / 10 < result || round(result * 10) / 10 > result)
-    printf("Result: %.2lf\n", result);
-  else if (round(result) > result || round(result) < result)
-    printf("Result: %.1lf\n", result);
-  else
-    printf("Result: %.0lf\n", result);
+	char *f1 = "%.";
+	char f2[5];
+	char *f3 = "lf\n";
+	unsigned long l = 10;
+	char fmt[l];
+
+	unsigned int n = 1, c = 0;
+	while (round(result * n) != (result * n)) {
+		c++;
+		snprintf(f2, sizeof(f2), "%d", c);
+		n *= 10;
+	}
+
+	strncat(fmt, f1, l);
+	strncat(fmt, f2, (l=l-strlen(f1)));
+	strncat(fmt, f3, l-strlen(f3));
+	printf(fmt, result);
 }

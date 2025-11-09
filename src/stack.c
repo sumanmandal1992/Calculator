@@ -64,10 +64,13 @@ void *peek(Stack *st) {
 	return st->top->data;
 }
 
-void display(Stack *st) {
+void display(Stack *st, Type t) {
 	Node *tmp = st->top;
 	while (tmp != NULL) {
-		printf("%lf\n", *(double*)tmp->data);
+		if (t == num)
+			printf("%lf\n", *(double*)tmp->data);
+		else
+			printf("%s\n", (char*)tmp->data);
 		tmp = tmp->next;
 	}
 }
